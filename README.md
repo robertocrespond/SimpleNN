@@ -3,15 +3,15 @@
 SimpleNN is a simplified framework for building and training neural networks models. Simpleness is at the core of this framework, making both the API and code structure intuitive.
 This simpleness makes the framework friendly for expanding functionality and improvements.
 
-Currently SimpleNN only supports sequential models. Only seuential execution graphs are supportes. This means that the following operations are not supported:
+Currently SimpleNN only supports sequential models. Only sequential execution graphs are supported. This means that the following operations are not supported:
 
 - Concatenations of any kind (Residual gates or multiple inputs)
 - Addition/Multiplications of layers
 - Loops (RNNs)
 
-Originally built a learning excercise.
+Originally built as a learning excercise.
 
-### **For complexe examples check the /examples directory.**
+### **For complete examples check the /examples directory.**
 
 <br>
 
