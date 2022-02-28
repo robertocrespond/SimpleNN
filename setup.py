@@ -48,6 +48,8 @@ def load_requirements(fname):
     return parsed_reqs
 
 
+long_description = (pathlib.Path(__file__).parent / "README.md").read_text()
+
 REQUIREMENTS_FILE = os.path.join(str(pathlib.Path(__file__).parent.resolve()), "requirements.txt")
 BUILD_DEPENDENCIES = ["wheel"]
 DEPENDENCIES = BUILD_DEPENDENCIES + load_requirements(REQUIREMENTS_FILE)
@@ -60,4 +62,6 @@ setup(
     author_email="ra.crespoa@gmail.com",
     packages=find_packages("."),
     install_requires=DEPENDENCIES,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )

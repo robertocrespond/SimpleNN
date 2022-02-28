@@ -4,12 +4,14 @@ from simplenn import Network
 from simplenn.layer import Dense
 from simplenn.activation import ReLu
 from simplenn.activation import SigmoidLoss
+from simplenn.metrics import AucPRC
+from simplenn.metrics import AucROC
 from simplenn.metrics.loss import BinaryCrossEntropy
 from simplenn.metrics import Accuracy
 
 from simplenn.optimizers import RMSProp
 
-SAMPLES = 1000
+SAMPLES = 10000
 FEATURES = 5
 N_CLASSES = 2
 
@@ -34,12 +36,14 @@ class DemoNetwork(Network):
         return self.output(x, targets)
 
 
-optimizer = RMSProp(decay=1e-1, rho=0.999, lr=0.02)
+optimizer = RMSProp(decay=1e-3, rho=0.999, lr=0.02)
 acc = Accuracy()
+auc = AucROC()
+aucprc = AucPRC()
 model = DemoNetwork(optimizer=optimizer)
 
 # All metrics derived from a decision function utilize a .5 threshold
-model.fit(X, y_vector, epochs=10, metrics=[acc])
+model.fit(X, y_vector, epochs=10, metrics=[acc, auc, aucprc])
 
 yprob_train = model.predict(X)
 train_acc = acc(yprob_train, y_vector)
