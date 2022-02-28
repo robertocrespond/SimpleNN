@@ -26,5 +26,7 @@ class AucROC:
 
             rectangle_area = (last_fpr - fpr) * last_tpr
             auc += rectangle_area
+            last_tpr = tpr
+            last_fpr = fpr
 
-        return auc / ITERATIONS
+        return auc

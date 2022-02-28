@@ -26,5 +26,7 @@ class AucPRC:
 
             rectangle_area = (last_tpr - tpr) * last_precision
             auc += rectangle_area
+            last_tpr = tpr
+            last_precision = precision
 
-        return auc / ITERATIONS
+        return auc
