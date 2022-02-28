@@ -94,3 +94,7 @@ yhat = m2.predict(X)
 - Accuracy : simplenn.metrics.Accuracy
 - Mean absolute error : simplenn.metrics.loss.MeanAbsoluteError
 - Mean squared error : simplenn.metrics.loss.MeanSquaredError
+- Area under the curve - receiver operating characteristic : simplenn.metrics.AucROC
+- Area under the curve - precision recall curve : simplenn.metrics.AucPRC
+- TPR (Recall) : simplenn.metrics.TPR
+- FPR : simplenn.metrics.FPR

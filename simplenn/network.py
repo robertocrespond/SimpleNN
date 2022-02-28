@@ -84,7 +84,7 @@ class Network:
             z = block.back(z)
 
         # optimize parameters
-        self.optimizer.learn(self.get_layers())
+        self.optimizer.step(self.get_layers())
 
     def predict(self, X):
         blocks: List[Block] = self.get_forward_execution_graph()

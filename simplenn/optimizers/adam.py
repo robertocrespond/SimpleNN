@@ -59,7 +59,7 @@ class Adam:
         layer.W_momentum = self.b1 * layer.W_momentum + (1 - self.b1) * layer.dW
         layer.b_momentum = self.b1 * layer.b_momentum + (1 - self.b1) * layer.db
 
-    def learn(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]):
         lr = self.get_adjusted_lr()
         for layer in layers:
 

@@ -38,7 +38,7 @@ class AdaGrad:
         layer.W_cache += layer.dW**2
         layer.b_cache += layer.db**2
 
-    def learn(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]):
         lr = self.get_adjusted_lr()
         for layer in layers:
 

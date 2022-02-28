@@ -38,7 +38,7 @@ class RMSProp:
         layer.W_cache = self.rho * layer.W_cache + (1 - self.rho) * layer.dW**2
         layer.b_cache = self.rho * layer.b_cache + (1 - self.rho) * layer.db**2
 
-    def learn(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]):
         lr = self.get_adjusted_lr()
         for layer in layers:
 

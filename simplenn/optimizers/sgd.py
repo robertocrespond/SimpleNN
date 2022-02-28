@@ -37,7 +37,7 @@ class SGD:
         layer.W_momentum = W_update
         layer.b_momentum = b_update
 
-    def learn(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]):
         lr = self.get_adjusted_lr()
         for layer in layers:
 
