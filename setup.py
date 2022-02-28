@@ -2,6 +2,7 @@ import os
 import pathlib
 from setuptools import setup
 from setuptools import find_packages
+from simplenn import __version__
 
 try:
     # pip >=20
@@ -52,10 +53,11 @@ BUILD_DEPENDENCIES = ["wheel"]
 DEPENDENCIES = BUILD_DEPENDENCIES + load_requirements(REQUIREMENTS_FILE)
 
 setup(
-    name="simplenn",
-    version="0.0.1",
+    name="simple-neural",
+    version=__version__,
     description="Simple Deep Learning Framework",
     author="Roberto Crespo",
+    author_email="ra.crespoa@gmail.com",
     packages=find_packages("."),
     install_requires=DEPENDENCIES,
 )

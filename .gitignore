@@ -7,8 +7,9 @@
 **/venv
 
 .env
-
 *runlocal.sh
+
+**.pypirc
 
 **uncommitted/
 uncommitted/**

@@ -17,6 +17,12 @@ Originally built as a learning excercise.
 
 ## Getting Started
 
+### Install
+
+```python
+pip install simple-neural
+```
+
 ```python
 # Multi class classification
 FEATURES = 5
