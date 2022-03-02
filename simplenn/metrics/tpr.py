@@ -4,8 +4,8 @@ THRESHOLD = 0.5
 
 
 class TPR:
-    NAME = "true_positive_rate"
-    ALIAS = "tpr"
+    name = "true_positive_rate"
+    alias = "tpr"
 
     def __call__(self, y_hat, targets, threshold=THRESHOLD):
         y_hat = (y_hat > threshold) * 1

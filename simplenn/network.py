@@ -4,6 +4,8 @@ from copy import deepcopy
 from simplenn.block import Block
 from simplenn.layer import Layer
 from simplenn.metrics.accuracy import Accuracy
+from simplenn.metrics.metric import Metric
+from simplenn.optimizers.optimizer import Optimizer
 from typing import List
 from typing import Union
 
@@ -13,21 +15,23 @@ import numpy as np
 class Network:
     """Base class used for block orquestration"""
 
-    def __init__(self, optimizer) -> None:
-        self.optimizer = optimizer
+    def __init__(self, optimizer: Optimizer) -> None:
+        if not isinstance(optimizer, Optimizer):
+            raise TypeError("Invalid optimizer passed.")
+        self.optimizer: Optimizer = optimizer
 
-    def get_block_names(self):
+    def get_block_names(self) -> List[str]:
         """Retrieve all block names"""
-        block_names = [prop for prop in self.__dir__() if isinstance(getattr(self, prop), Block)]
+        block_names: List[str] = [prop for prop in self.__dir__() if isinstance(getattr(self, prop), Block)]
         return block_names
 
     def get_layers(self) -> List[Layer]:
         """Retrieve all layer blocks"""
-        block_names = self.get_block_names()
+        block_names: List[str] = self.get_block_names()
 
-        layers = []
+        layers: List[Layer] = []
         for block_name in block_names:
-            block: Block = getattr(self, block_name)
+            block: Block = getattr(self, block_name)  # type: ignore
             if isinstance(block, Layer):
                 layers.append(block)
         return layers
@@ -35,19 +39,19 @@ class Network:
     def get_backward_execution_graph(self) -> List[Block]:
         """Retrieve all blocks and return their execution order backwards"""
 
-        block_names = self.get_block_names()
-        graph_start = None
+        block_names: List[str] = self.get_block_names()
+        graph_start: Union[Block, None] = None
 
         # Seek network end
         for block_name in block_names:
-            block: Block = getattr(self, block_name)
+            block: Block = getattr(self, block_name)  # type: ignore
             setattr(block, "name", block_name)
             if block.next_block is None:
                 graph_start = block
                 break
 
         current_block: Union[Block, None] = graph_start
-        execution_graph = []
+        execution_graph: List[Block] = []
         while current_block:
             execution_graph.append(current_block)
             current_block = current_block.prev_block
@@ -56,50 +60,70 @@ class Network:
     def get_forward_execution_graph(self) -> List[Block]:
         """Retrieve all blocks and return their execution order forwards"""
 
-        block_names = self.get_block_names()
-        graph_start = None
+        block_names: List[str] = self.get_block_names()
+        graph_start: Union[Block, None] = None
 
-        # Seek network end
+        # Seek network start
         for block_name in block_names:
-            block: Block = getattr(self, block_name)
+            block: Block = getattr(self, block_name)  # type: ignore
             setattr(block, "name", block_name)
             if block.prev_block is None:
                 graph_start = block
                 break
 
         current_block: Union[Block, None] = graph_start
-        execution_graph = []
+        execution_graph: List[Block] = []
         while current_block:
             execution_graph.append(current_block)
             current_block = current_block.next_block
         return execution_graph
 
-    def backwards(self, output, targets):
-        """Automatic differentiator orquestrator for sequential networks"""
+    def backwards(self, output: np.ndarray, targets: np.ndarray) -> None:
+        """
+        Automatic differntiator orquestrator for sequential networks.
+        Runs backpropagation from the loss function through every block
+        of the network. After calculating the gradient, the optimizer is used
+        to update the parameters of the network taking a descent step in the
+        immediate loss approximation described by the gradient.
+
+        Args:
+            output (np.ndarray): Output of loss function
+            targets (np.ndarray): True values of target variable
+                being predicted with inputs
+        """
         blocks: List[Block] = self.get_backward_execution_graph()
 
         # backpropagation
-        z = blocks[0].back(output, targets)
+        z: np.ndarray = blocks[0].back(output, targets)  # type: ignore
         for block in blocks[1:]:
             z = block.back(z)
 
         # optimize parameters
         self.optimizer.step(self.get_layers())
 
-    def predict(self, X):
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """
+        Utilize trained parameters to predict target/label variable
+
+        Args:
+            X (np.ndarray): Input variables with the same shape as in training
+
+        Returns:
+            np.ndarray: Predicted target/label variable
+        """
         blocks: List[Block] = self.get_forward_execution_graph()
         z = blocks[0](X, inference=True)
         for block in blocks[1:]:
             z = block(z, inference=True)
         return z
 
-    def _init_training_report(self, metrics, X_val, y_val):
-        custom_metrics = [f"Train_{m.NAME}" for m in metrics]
-        custom_metrics_alias = [f"Train_{m.ALIAS}" for m in metrics]
+    def _init_training_report(self, metrics: List[Metric], X_val: np.ndarray, y_val: np.ndarray):
+        custom_metrics: List[str] = [f"Train_{m.name}" for m in metrics]
+        custom_metrics_alias: List[str] = [f"Train_{m.alias}" for m in metrics]
 
         if X_val is not None and y_val is not None:
-            custom_metrics += [f"Val_{m.NAME}" for m in metrics]
-            custom_metrics_alias += [f"Val_{m.ALIAS}" for m in metrics]
+            custom_metrics += [f"Val_{m.name}" for m in metrics]
+            custom_metrics_alias += [f"Val_{m.alias}" for m in metrics]
 
         self.tr_report_columns = ["Loss"] + custom_metrics
         self.tr_report_format_row = (
@@ -149,11 +173,11 @@ class Network:
             if not epoch % (1 if epochs <= 100 else int(epochs / 100)):
                 yhat = self.predict(X)
                 reg_loss = loss + sum([loss_fcn.get_reg_loss(layer) for layer in self.get_layers()])
-                train_metrics = {m.NAME: m(yhat, y) for m in metrics}
+                train_metrics = {m.name: m(yhat, y) for m in metrics}
                 val_metrics = None
                 if X_val is not None and y_val is not None:
                     yhat_val = self.predict(X_val)
-                    val_metrics = {m.NAME: m(yhat_val, y_val) for m in metrics}
+                    val_metrics = {m.name: m(yhat_val, y_val) for m in metrics}
 
                 self.training_report(epoch, loss, reg_loss, train_metrics, val_metrics)
 

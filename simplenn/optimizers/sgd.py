@@ -1,26 +1,30 @@
 from simplenn.layer import Layer
+from simplenn.optimizers.optimizer import Optimizer
 from typing import List
 from typing import Union
 
 
-class SGD:
+class SGD(Optimizer):
+    """
+    Initialize Stochastic gradient descent optimizer
+
+    Args:
+        lr (float, optional): learning rate. Defaults to 0.1.
+        decay (Union[float, None], optional): factor of linear decay per iteration to learning rate. Defaults to None.
+        momentum (Union[float, None], optional): Factor of how much momentum (weight of previous gradient) to include.
+            A momentum of 0 would yield regular SGD. Defaults to None.
+    """
+
     def __init__(
         self,
         lr: float = 0.1,
         decay: Union[float, None] = None,
         momentum: Union[float, None] = None,
     ) -> None:
+        super().__init__()
         self.lr = lr
         self.decay = decay
         self.momentum = momentum
-        self.iteration = 0
-
-    def get_adjusted_lr(self):
-        """Learning rate adjusted by linear decay"""
-        lr = self.lr
-        if self.decay:
-            lr = self.lr / (1 + self.decay * self.iteration)
-        return lr
 
     def _get_momentum(self, layer: Layer):
         if self.momentum is None:
@@ -36,7 +40,7 @@ class SGD:
         layer.W_momentum = W_update
         layer.b_momentum = b_update
 
-    def step(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]) -> None:
         lr = self.get_adjusted_lr()
         for layer in layers:
 

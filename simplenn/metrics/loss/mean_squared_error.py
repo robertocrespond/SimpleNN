@@ -4,14 +4,14 @@ import numpy as np
 
 
 class MeanSquaredError(Loss):
-    NAME = "mean_squared_error"
-    ALIAS = "mse"
+    name = "mean_squared_error"
+    alias = "mse"
 
     def __call__(self, prediction, targets):
         loss_vector = np.mean((targets - prediction) ** 2, axis=-1)
         return np.mean(loss_vector)
 
     def back(self, z, targets):
-        self.zstate = -2 * (targets - z) / len(z[0])
-        self.zstate /= len(z)
-        return self.zstate
+        zstate = -2 * (targets - z) / len(z[0])
+        zstate /= len(z)
+        return zstate

@@ -4,8 +4,8 @@ THRESHOLD = 0.5
 
 
 class Accuracy:
-    NAME = "accuracy"
-    ALIAS = "acc"
+    name = "accuracy"
+    alias = "acc"
 
     def __call__(self, y_hat, targets, threshold=THRESHOLD):
         if np.size(y_hat) == np.size(np.squeeze(y_hat)) and y_hat.shape[-1] == 1:

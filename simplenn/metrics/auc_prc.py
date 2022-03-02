@@ -5,8 +5,8 @@ ITERATIONS = 1000
 
 
 class AucPRC:
-    NAME = "auc_prc"
-    ALIAS = "prc"
+    name = "auc_prc"
+    alias = "prc"
 
     def __call__(self, y_hat, targets):
         auc = 0

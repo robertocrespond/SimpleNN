@@ -1,4 +1,5 @@
 from simplenn.block import Block
+from typing import Union
 
 import numpy as np
 
@@ -7,7 +8,7 @@ class SoftMax(Block):
     def __init__(self) -> None:
         super().__init__()
 
-    def __call__(self, block: Block, inference: bool = False):
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
         x = self.register_block(block, inference)
         exp = np.exp(x - np.max(x, axis=1, keepdims=True))
         output = exp / np.sum(exp, axis=1, keepdims=True)
@@ -19,13 +20,13 @@ class SoftMax(Block):
         return self.output
 
     def back(self, z):
-        self.zstate = np.empty_like(z)
+        zstate = np.empty_like(z)
         for i, (term_output, term_z) in enumerate(zip(self.output, z)):
             term_output = term_output.reshape(-1, 1)  # flatten
             jacobian = np.diagflat(term_output) - np.dot(term_output, term_output.T)
-            self.zstate[i] = np.dot(jacobian, term_z)
+            zstate[i] = np.dot(jacobian, term_z)
 
-        return self.zstate
+        return zstate
 
 
 class SoftMaxLoss(Block):
@@ -34,8 +35,8 @@ class SoftMaxLoss(Block):
         self.loss = loss
         self.activation = SoftMax()
 
-    def __call__(self, block, targets=None, inference: bool = False):
-        x = self.register_block(block)
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
+        x: np.ndarray = self.register_block(block)
         output = self.activation(x)
         if inference:
             return output
@@ -47,8 +48,8 @@ class SoftMaxLoss(Block):
         if len(targets.shape) == 2:
             targets = np.argmax(targets, axis=1)
 
-        self.zstate = z.copy()
-        self.zstate[range(n), targets] -= 1
-        self.zstate /= n
+        zstate = z.copy()
+        zstate[range(n), targets] -= 1
+        zstate /= n
 
-        return self.zstate
+        return zstate

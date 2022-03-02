@@ -1,4 +1,5 @@
 from simplenn.block import Block
+from typing import Union
 
 import numpy as np
 
@@ -7,19 +8,19 @@ class Sigmoid(Block):
     def __init__(self) -> None:
         super().__init__()
 
-    def __call__(self, block, inference: bool = False):
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
         x = self.register_block(block, inference)
         output = 1 / (1 + np.exp(-x))
 
         if inference:
             return output
-        self.output = output
-        return self.output
+        self.output = output  # type: ignore
+        return self.output  # type: ignore
 
     def back(self, z):
         # derivative from sigmoid function
-        self.zstate = z * (1 - self.output) * self.output
-        return self.zstate
+        zstate = z * (1 - self.output) * self.output
+        return zstate
 
 
 class SigmoidLoss(Block):
@@ -28,7 +29,7 @@ class SigmoidLoss(Block):
         self.loss = loss
         self.activation = Sigmoid()
 
-    def __call__(self, block, targets=None, inference: bool = False):
+    def __call__(self, block, inference: bool = False, targets=None):
         x = self.register_block(block)
         output = self.activation(x)
         if inference:
@@ -38,5 +39,5 @@ class SigmoidLoss(Block):
 
     def back(self, z, targets):
         z = self.loss.back(z, targets)
-        self.zstate = self.activation.back(z)
-        return self.zstate
+        zstate = self.activation.back(z)
+        return zstate

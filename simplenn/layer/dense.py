@@ -7,7 +7,7 @@ from .layer import Layer
 
 
 class Dense(Layer):
-    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False):
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
         x = self.register_block(block, inference)
         output = np.dot(x, self.W) + self.b
 
@@ -23,6 +23,7 @@ class Dense(Layer):
         self.dW = np.dot(self.x.T, z)
         self.db = np.sum(z, axis=0, keepdims=True)
 
+        # Account for regularization terms
         if self.W_l1 > 0:
             dL1 = np.ones_like(self.W)
             dL1[self.W < 0] = -1
@@ -37,5 +38,5 @@ class Dense(Layer):
             self.db += 2 * self.b_l2 * self.b
 
         # Gradient on values
-        self.zstate = np.dot(z, self.W.T)
-        return self.zstate
+        zstate = np.dot(z, self.W.T)
+        return zstate

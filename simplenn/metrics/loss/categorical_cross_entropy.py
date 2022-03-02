@@ -12,13 +12,12 @@ class CategoricalCrossEntropy(Loss):
         elif len(true_labels.shape) == 2:
             # Only if one-hot labels
             loss_vector = np.sum(yc * true_labels, axis=1)
-        # return 10
         return np.mean(-np.log(loss_vector + np.finfo(np.float32).eps))
 
     def back(self, z, true_labels):
         if len(true_labels.shape) == 1:
             # OHE
             y_true = np.eye(true_labels.shape[1])[true_labels]
-        self.zstate = -y_true / z
-        self.zstate /= len(z)
-        return self.zstate
+        zstate = -y_true / z
+        zstate /= len(z)
+        return zstate

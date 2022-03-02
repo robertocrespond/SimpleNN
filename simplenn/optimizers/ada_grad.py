@@ -1,30 +1,35 @@
 from simplenn.layer import Layer
+from simplenn.optimizers.optimizer import Optimizer
 from typing import List
 from typing import Union
 
 import numpy as np
 
 
-class AdaGrad:
-    """Adaptive gradient -> learning rate for every parameter"""
+class AdaGrad(Optimizer):
+    """
+    Adaptive gradient -> Compute a learning rate for every parameter
+
+    AdaGrad shrinks the learning rate according to the entire history
+    of the squared gradient and may have made the learning rate too
+    small before arriving at such a convex structure.
+
+    Args:
+        lr (float, optional): learning rate. Defaults to 0.1.
+        decay (Union[float, None], optional): factor of linear decay per iteration to learning rate. Defaults to None.
+        eps (float, optional): Epsilon. Avoids division by zero. Defaults to 1e-7 .
+    """
 
     def __init__(
         self,
         lr: float = 0.1,
         decay: Union[float, None] = None,
-        eps: Union[float, None] = 1e-7,
+        eps: float = 1e-7,
     ) -> None:
+        super().__init__()
         self.lr = lr
         self.decay = decay
         self.eps = eps
-        self.iteration = 0
-
-    def get_adjusted_lr(self):
-        """Learning rate adjusted by linear decay"""
-        lr = self.lr
-        if self.decay:
-            lr = self.lr / (1 + self.decay * self.iteration)
-        return lr
 
     def _get_cache(self, layer: Layer):
         layer._init_cache()
@@ -38,7 +43,7 @@ class AdaGrad:
         layer.W_cache += layer.dW**2
         layer.b_cache += layer.db**2
 
-    def step(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]) -> None:
         lr = self.get_adjusted_lr()
         for layer in layers:
 

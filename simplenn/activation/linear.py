@@ -1,4 +1,7 @@
 from simplenn.block import Block
+from typing import Union
+
+import numpy as np
 
 
 class Linear(Block):
@@ -7,19 +10,19 @@ class Linear(Block):
     def __init__(self) -> None:
         super().__init__()
 
-    def __call__(self, block: Block, inference: bool = False):
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
         x = self.register_block(block, inference)
         output = x
 
         if inference:
             return output
 
-        self.output = output
-        return self.output
+        self.output = output  # type: ignore
+        return self.output  # type: ignore
 
     def back(self, z):
-        self.zstate = z.copy()
-        return self.zstate
+        zstate = z.copy()
+        return zstate
 
 
 class LinearLoss(Block):
@@ -28,7 +31,7 @@ class LinearLoss(Block):
         self.loss = loss
         self.activation = Linear()
 
-    def __call__(self, block, targets=None, inference: bool = False):
+    def __call__(self, block, inference: bool = False, targets=None):
         x = self.register_block(block)
         output = self.activation(x)
         if inference:
@@ -38,5 +41,5 @@ class LinearLoss(Block):
 
     def back(self, z, targets):
         z = self.loss.back(z, targets)
-        self.zstate = self.activation.back(z)
-        return self.zstate
+        zstate = self.activation.back(z)
+        return zstate

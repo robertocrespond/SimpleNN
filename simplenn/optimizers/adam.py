@@ -1,35 +1,45 @@
 from simplenn.layer import Layer
+from simplenn.optimizers.optimizer import Optimizer
 from typing import List
 from typing import Union
 
 import numpy as np
 
 
-class Adam:
+class Adam(Optimizer):
     """
-    Adaptive Momentum
-        - Uses running average of gradients (momentum) (as SGD)
-            proportion of current gradient in update is set with b1
-        - Per-parameter learning rate with cache (as RMSProp)
-        - bias correction terms to cache and momentum to account
-            controlled with b2
+    Adaptive Momentum Optimizer
+    Per-parameter learning rate with cache (as RMSProp).
+    Maintains a first and second moment of the gradient.
+    First moment is the decaying mean gradient (controlled by b1).
+    The estimation the mean of the gradient, uses a running average
+    of gradients (similar to SGD).
 
+    Second moment is the decaying variance (controlled by b2).
+    The estimation of the variance of the gradient, uses a running
+    sum of gradients (similar to RMSProp)
+
+
+    Args:
+        lr (float, optional): learning rate. Defaults to 0.1.
+        decay (Union[float, None], optional): factor of linear decay per iteration
+            to learning rate. Defaults to None.
+        eps (float, optional): Epsilon. Avoids division by zero. Defaults to 1e-7 .
+        b1 (float, optional): Factor for decaying moving average of partial
+            dertivates how much momentum (weight of previous gradient) to include.
+            Defaults to 0.9 .
+        b2 (float, optional): Factor for decaying variance of partial
+            dertivates how much momentum (weight of previous gradient) to include.
+            Defaults to 0.999 .
     """
 
     def __init__(self, lr: float = 0.1, decay: Union[float, None] = None, eps: Union[float, None] = 1e-7, b1: float = 0.9, b2: float = 0.999) -> None:
+        super().__init__()
         self.lr = lr
         self.decay = decay
         self.eps = eps
         self.b1 = b1
         self.b2 = b2
-        self.iteration = 0
-
-    def get_adjusted_lr(self):
-        """Learning rate adjusted by linear decay"""
-        lr = self.lr
-        if self.decay:
-            lr = self.lr / (1 + self.decay * self.iteration)
-        return lr
 
     def _get_cache(self, layer: Layer):
         layer._init_cache()
@@ -59,7 +69,7 @@ class Adam:
         layer.W_momentum = self.b1 * layer.W_momentum + (1 - self.b1) * layer.dW
         layer.b_momentum = self.b1 * layer.b_momentum + (1 - self.b1) * layer.db
 
-    def step(self, layers: List[Layer]):
+    def step(self, layers: List[Layer]) -> None:
         lr = self.get_adjusted_lr()
         for layer in layers:
 

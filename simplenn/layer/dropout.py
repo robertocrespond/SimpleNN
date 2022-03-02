@@ -9,7 +9,7 @@ class Dropout(Block):
         super().__init__()
         self.rate = 1 - rate
 
-    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False):
+    def __call__(self, block: Union[Block, np.ndarray], inference: bool = False, targets=None):
         x = self.register_block(block, inference)
 
         if inference:
@@ -20,5 +20,5 @@ class Dropout(Block):
         return self
 
     def back(self, z):
-        self.zstate = z * self.scaled_boolean_filter
-        return self.zstate
+        zstate = z * self.scaled_boolean_filter
+        return zstate

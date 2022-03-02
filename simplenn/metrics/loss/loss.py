@@ -1,10 +1,14 @@
 from simplenn.layer import Layer
+from simplenn.metrics.metric import Metric
 
 import numpy as np
 
 
-class Loss:
+class Loss(Metric):
+    """Base class for evaluation metrics that can be used as losses during backpropagation."""
+
     def get_reg_loss(self, layer: Layer):
+        """Calculates loss attributable to regulation L1 and L2 factors."""
         attrs = ["W", "b", "W_l1", "b_l1", "W_l2", "b_l2"]
         reg_loss = 0
 

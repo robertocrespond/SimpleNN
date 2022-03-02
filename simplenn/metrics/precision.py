@@ -4,8 +4,8 @@ THRESHOLD = 0.5
 
 
 class Precision:
-    NAME = "precision"
-    ALIAS = "pr"
+    name = "precision"
+    alias = "pr"
 
     def __call__(self, y_hat, targets, threshold=THRESHOLD):
         y_hat = (y_hat > threshold) * 1

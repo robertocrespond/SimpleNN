@@ -4,8 +4,8 @@ THRESHOLD = 0.5
 
 
 class FPR:
-    NAME = "false_positive_rate"
-    ALIAS = "fpr"
+    name = "false_positive_rate"
+    alias = "fpr"
 
     def __call__(self, y_hat, targets, threshold=THRESHOLD):
         y_hat = (y_hat > threshold) * 1
