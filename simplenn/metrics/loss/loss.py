@@ -1,5 +1,6 @@
-import numpy as np
 from simplenn.layer import Layer
+
+import numpy as np
 
 
 class Loss:

@@ -1,8 +1,8 @@
+from simplenn.layer import Layer
 from typing import List
 from typing import Union
 
 import numpy as np
-from simplenn.layer import Layer
 
 
 class AdaGrad:

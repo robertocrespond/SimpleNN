@@ -1,6 +1,4 @@
-import numpy as np
 from simplenn.metrics.fpr import FPR
-
 from simplenn.metrics.tpr import TPR
 
 ITERATIONS = 1000

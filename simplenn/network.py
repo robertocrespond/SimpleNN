@@ -1,13 +1,13 @@
 import pathlib
 import pickle
 from copy import deepcopy
+from simplenn.block import Block
+from simplenn.layer import Layer
+from simplenn.metrics.accuracy import Accuracy
 from typing import List
 from typing import Union
 
 import numpy as np
-from simplenn.block import Block
-from simplenn.layer import Layer
-from simplenn.metrics.accuracy import Accuracy
 
 
 class Network:
@@ -107,7 +107,6 @@ class Network:
             + " ".join([f"{a}=" + "{" + x + ":<10}" for a, x in zip(custom_metrics_alias, custom_metrics)])
             + " lr={lr:<10}"
         )
-        # print(self.tr_report_format_row.format(epoch="", loss="", reg_loss="", **{k: k for k in custom_metrics}))
 
     def training_report(self, epoch, loss, reg_loss, train_metrics, val_metrics=None):
         metrics = {f"Train_{k}": f"{v:.4f}" for k, v in train_metrics.items()}

@@ -40,7 +40,6 @@ class DemoNetwork(Network):
         return self.output(x, targets)
 
 
-############################################################################
 optimizer = Adam(lr=0.1, decay=1e-5, b1=0.9, b2=0.999)
 mse = MeanSquaredError()
 mae = MeanAbsoluteError()

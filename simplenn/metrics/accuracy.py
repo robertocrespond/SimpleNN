@@ -16,5 +16,5 @@ class Accuracy:
             targets = np.argmax(targets, axis=1)
         if len(y_hat.shape) == 2:
             y_hat = np.argmax(y_hat, axis=1)
-        # print("asd", targets[, y_hat[:5])
+
         return np.mean(targets == y_hat)

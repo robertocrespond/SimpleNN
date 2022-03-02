@@ -1,5 +1,3 @@
-import numpy as np
-
 from simplenn.metrics.precision import Precision
 from simplenn.metrics.tpr import TPR
 

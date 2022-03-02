@@ -1,7 +1,6 @@
+from simplenn.layer import Layer
 from typing import List
 from typing import Union
-
-from simplenn.layer import Layer
 
 
 class SGD:

@@ -1,7 +1,7 @@
+from simplenn.block import Block
 from typing import Union
 
 import numpy as np
-from simplenn.block import Block
 
 from .layer import Layer
 

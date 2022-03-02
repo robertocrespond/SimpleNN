@@ -38,12 +38,10 @@ class DemoNetwork(Network):
 
 optimizer = RMSProp(decay=1e-3, rho=0.999, lr=0.02)
 acc = Accuracy()
-auc = AucROC()
-aucprc = AucPRC()
 model = DemoNetwork(optimizer=optimizer)
 
 # All metrics derived from a decision function utilize a .5 threshold
-model.fit(X, y_vector, epochs=10, metrics=[acc, auc, aucprc])
+model.fit(X, y_vector, epochs=10, metrics=[acc, AucROC(), AucPRC()])
 
 yprob_train = model.predict(X)
 train_acc = acc(yprob_train, y_vector)

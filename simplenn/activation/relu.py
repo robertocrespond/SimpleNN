@@ -1,5 +1,6 @@
-import numpy as np
 from simplenn.block import Block
+
+import numpy as np
 
 
 class ReLu(Block):

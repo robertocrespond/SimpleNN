@@ -1,5 +1,6 @@
-import numpy as np
 from simplenn.metrics.loss.loss import Loss
+
+import numpy as np
 
 
 class MeanAbsoluteError(Loss):
