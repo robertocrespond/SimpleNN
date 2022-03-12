@@ -1,6 +1,6 @@
 # SimpleNN
 
-SimpleNN is a simplified framework for building and training neural networks models. Framework is build on modularity and flexibility to enable easy adoption and feature expansions.
+SimpleNN is a simplified framework for building and training neural networks models. Framework is built on modularity and flexibility, enabling easy adoption and feature expansion.
 
 Currently SimpleNN only supports sequential models. Only sequential execution graphs are supported. This means that the following operations are not supported:
 
