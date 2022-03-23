@@ -2,13 +2,11 @@
 
 SimpleNN is a simplified framework for building and training neural networks models. Framework is build on modularity and flexibility to enable easy adoption and feature expansions.
 
-Currently SimpleNN only supports sequential models. Only sequential execution graphs are supported. This means that the following operations are not supported:
+Currently SimpleNN only supports feedforward models. Only sequential execution graphs are supported. The following operations are not currently supported:
 
 - Concatenations of any kind (Residual gates or multiple inputs)
 - Addition/Multiplications of layers
 - Loops (RNNs)
-
-Originally built as a learning excercise.
 
 ### **For complete examples check the /examples directory.**
 
@@ -22,29 +20,84 @@ Originally built as a learning excercise.
 pip install simple-neural
 ```
 
+<br>
+
+### Creating your first model
+
+**Example for building a multi-class deep feedforward network**
+
+1. Load data into predictos and one hot encoded target
+
 ```python
-# Multi class classification
+# This generates dummy data, with 3 classes to predict
+# In a real-project, load the data, pre-process it and continue to step 2
+SAMPLES = 1000
 FEATURES = 5
 N_CLASSES = 3
+
+X = np.random.random((SAMPLES, FEATURES))
+y = np.random.binomial(N_CLASSES - 1, 1 / N_CLASSES, SAMPLES)
+y_ohe = np.eye(N_CLASSES)[y]  # Input to model targets must be one hot encoded
+```
+
+2. Define network object
+
+```python
+from simplenn import Network
+from simplenn.layer import Dense
+from simplenn.activation import ReLu
+from simplenn.activation import SoftMaxLoss
+from simplenn.metrics.loss import CategoricalCrossEntropy
 
 class DemoNetwork(Network):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Store all layers that will be part of the model
+
+        # Dense layer, input size matches data shape,
+        # output is chosen to be of size 64
         self.l1 = Dense(FEATURES, 64, W_l2=1e-3, b_l2=1e-3)
+
+        # Rectified Linear Unit
         self.activation1 = ReLu()
-        self.l2 = Dense(32, N_CLASSES)
+
+        # Dense layer, input size matches previous layer output shape,
+        # output is chosen to be of size of number of classes
+        self.l2 = Dense(64, N_CLASSES)
+
+        # Final activation function is chosen to be softmax
+        # The final activation prediction is evaluated using
+        # CategoricalCrossEntropy
         self.output = SoftMaxLoss(loss=CategoricalCrossEntropy())
 
-    def forward(self, x, targets): # define forward pass
+    def forward(self, x, targets):
+        # Define order of execution of layers for the forward pass
         x = self.l1(x)
         x = self.activation1(x)
         x = self.l2(x)
         return self.output(x, targets)
+```
 
+3. Initialize model
+
+```python
+from simplenn.optimizers import Adam
+
+# Define optimizer
 optimizer = Adam(lr=0.03, decay=5e-7, b1=0.9, b2=0.999)
-acc = Accuracy()
+
+# Define model
 model = DemoNetwork(optimizer=optimizer)
-model.fit(X, y, epochs=1000, metrics=[acc])
+
+```
+
+4. Train model
+
+```python
+from simplenn.metrics import Accuracy
+
+# Train model and specify metrics to track
+model.fit(X, y, epochs=1000, metrics=[Accuracy()])
 ```
 
 ## Saving/Loading Network
@@ -97,3 +150,5 @@ yhat = m2.predict(X)
 - Area under the curve - precision recall curve : simplenn.metrics.AucPRC
 - TPR (Recall) : simplenn.metrics.TPR
 - FPR : simplenn.metrics.FPR
+
+Originally built as a learning excercise.
